@@ -1,6 +1,6 @@
 *Set up your dev laptop with one command*
 
-No longer copy-paste a dozen commands — Claude does it for you.
+No more copy-pasting a dozen commands — Claude does it for you.
 
 *What you'll end up with:* git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0). Plus GitHub auth set up so `git push` doesn't pop up Keychain prompts.
 
@@ -12,7 +12,7 @@ No longer copy-paste a dozen commands — Claude does it for you.
 Follow the Claude Code install canvas (link in this channel). Come back here when you can launch it.
 
 *Step 2 — Download the skill*
-Open your terminal (Terminal on macOS/Linux, PowerShell on Windows). Paste *only* the line for your OS and press Enter.
+Open your terminal (Terminal on macOS/Linux, PowerShell on Windows). Paste *only* the line for your OS and press Enter. Don't type `bash` or `cd` first — just paste the line.
 
 macOS or Linux:
 ```
@@ -36,18 +36,25 @@ Type one of these into Claude Code:
 
 Claude will detect your OS, check what you already have, install what's missing, walk you through GitHub auth (`gh auth login` + `gh auth setup-git`), and print a status table at the end.
 
+A few installs need *your* terminal (sudo prompts, browser flows). When Claude hits one, it'll hand you a command starting with `!` — paste that into your Claude Code prompt and press Enter. Examples: Xcode Command Line Tools, Homebrew, oh-my-zsh, Slack CLI, `gh auth login`.
+
 *Step 4 — Verify*
-Claude runs the verify block for you, but if you want to double-check manually, paste this into your terminal:
+Claude prints a status table for you, but if you want to double-check manually, paste this into your terminal:
 ```
 git --version
 node -v
 npm -v
 heroku --version
 gh --version
+sf --version
+slack version
+tabcmd --version
+python3 --version
+code --version
 ```
 
 ---
 
-*Updates:* the skill on your laptop is a static copy — re-run the Step 2 command any time to pull the latest version.
+*Updates:* the skill on your laptop is a static copy — re-run the Step 2 command any time to pull the latest version. No automatic updates.
 
 *Issues?* Drop a thread in this channel. The repo is at <https://github.com/allisonbierschenk/developer_setup|allisonbierschenk/developer_setup>.

@@ -50,7 +50,7 @@ Either way, **state explicitly to the user** that tabcmd may need a new terminal
 
 The `Bash` tool runs commands non-interactively, so commands that need real terminal interaction will fail or hang. These include:
 
-- `brew install --cask <anything>` that triggers a sudo prompt (Docker, some other casks).
+- `brew install --cask <anything>` that triggers a sudo prompt for some casks.
 - `gh auth login` (browser flow + paste a one-time code).
 - The Slack CLI install script (asks "install Deno? [y/N]").
 - The oh-my-zsh installer (asks to change your default shell).
@@ -58,9 +58,9 @@ The `Bash` tool runs commands non-interactively, so commands that need real term
 
 **Do not attempt these via the Bash tool.** Instead, tell the user to run them in their Claude Code prompt with the `!` prefix, which routes the command to their actual terminal:
 
-> Docker Desktop install needs sudo. Run this in your prompt:
+> Homebrew's installer needs your sudo password. Run this in your prompt:
 >
-> `! brew install --cask docker`
+> `! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 >
 > Once it finishes, let me know and I'll continue.
 

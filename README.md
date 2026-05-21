@@ -87,33 +87,71 @@ Claude will:
 3. Run installs in the mode you picked. (It pauses to confirm before oh-my-zsh either way — that one changes your shell.)
 4. Verify everything and print a status table at the end.
 
-A few installs need *your help in a new terminal tab* 
- `gh auth login`.
+---
+
+## Step 5 — Install Slack CLI
+
+**Open a new terminal tab** and paste the line for your OS. The installer will ask 1–2 yes/no questions — **answer `y` to all of them.**
+
+**macOS or Linux:**
+```
+curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```
+irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex
+```
+
+When it finishes, run `slack version` to confirm. If you see "command not found" on macOS/Linux, **open a fresh terminal tab** and try again — the installer added a new PATH entry that only loads in new shells.
 
 ---
 
-## Step 5 — Authenticate with GitHub
+## Step 6 — Authenticate with GitHub
 
-Once tools are installed, Claude walks you through GitHub setup automatically. **Don't skip this** — it's the difference between `git push` working silently and `git push` triggering macOS Keychain pop-ups every time.
+**1. Set your git identity.** Replace the placeholders with **your real name** and **the email on your GitHub account**, then run:
 
-Claude will:
+```
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
 
-1. **Set your git identity** — ask for your name and the email you use on GitHub, then run `git config --global user.name "..."` and `git config --global user.email "..."` for you.
-2. **Log you into the GitHub CLI** — run `gh auth login`, which opens your browser and asks you to paste a one-time code. Pick **HTTPS** when prompted, and answer **Yes** to "Authenticate Git with your GitHub credentials?"
-3. **Make `gh` the git credential helper** — runs `gh auth setup-git` so git stops asking for a password (no more macOS Keychain pop-ups).
-4. **Verify it works** — runs `gh auth status` and `gh repo list` to confirm. If repos print without a prompt, you're set.
+**2. Start the auth flow:**
 
-The whole walkthrough takes about 60 seconds and Claude does the typing — you just answer the prompts.
+```
+gh auth login
+```
+
+**3. Answer the prompts in this exact order:**
+
+| Prompt                                              | Answer                       |
+| --------------------------------------------------- | ---------------------------- |
+| What account do you want to log into?               | **GitHub.com** → press Enter |
+| What is your preferred protocol for Git operations? | **HTTPS** → press Enter      |
+| Authenticate Git with your GitHub credentials?      | **Yes** → press Enter        |
+| How would you like to authenticate GitHub CLI?      | **Login with a web browser** → press Enter |
+
+A browser window opens to finish the login.
+
+> **Heads up:** if you haven't logged into GitHub in a while, GitHub may first ask for a one-time code emailed to you. Enter that code first, **then** enter the one-time code your terminal printed.
 
 ---
 
-## Step 6 — Finish any manual steps Claude flags
+## Step 7 — Authenticate with Heroku
 
-Some tools need one human action before they work. Claude will tell you which apply:
+**1. Check whether you're already logged in:**
 
-- **macOS:** Click through the Xcode Command Line Tools GUI prompt.
-- **Windows:** Close and reopen PowerShell so the new tools are on PATH.
-- **Linux:** Log out and back in (so any group changes take effect).
+```
+heroku auth:whoami
+```
+
+**2. If you're not logged in, run:**
+
+```
+heroku login
+```
+
+This kicks off the SSO flow in your browser. **MFA is required** — you should have set this up in the pre-work.
 
 ---
 

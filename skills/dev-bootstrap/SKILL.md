@@ -137,7 +137,13 @@ In **run-everything mode**: run the missing ones sequentially, surfacing only er
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 9. **Salesforce CLI** — `brew install heroku/brew/sf` (preferred — keeps `sf` brew-managed so future `update everything to latest` upgrades cleanly via `brew upgrade`). Fallback: `npm install -g @salesforce/cli`. Verify with `sf --version`.
 10. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
-    - **Interactive (Rule 2):** asks "install Deno? [y/N]". Hand the user the `!`-prefixed command to run themselves.
+    - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** The installer prompts "install Deno? [y/N]" and "install slack-cli to /usr/local/bin? [y/N]". If you run it through the Bash tool, both prompts time out, the script exits silently, and **`slack` never lands on PATH**. The user thinks it installed when nothing happened. Always hand it off:
+      > Slack CLI's installer needs to ask you a couple of questions. Run this in your prompt:
+      >
+      > `! curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
+      >
+      > Answer **y** to both prompts. Tell me when it prints "Slack CLI installed".
+    - After they confirm, verify with `slack version`. If it's still not found, the most common cause is the installer wrote to `~/.slack/bin/slack` but `~/.slack/bin` isn't on PATH — append it to `~/.zshrc` and tell the user to open a new terminal tab.
 
 ### Windows (PowerShell, not WSL)
 
@@ -152,7 +158,6 @@ Run each via the `Bash` tool by invoking `powershell -Command "..."`, or instruc
 7. **oh-my-zsh** — Skip on native Windows. Tell the user oh-my-zsh requires zsh, which isn't standard on Windows; they'd need WSL2 (which uses the Linux flow) or Git Bash with zsh. Don't try to install it on plain PowerShell.
 8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
 9. **Slack CLI** — `irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex` (run in PowerShell). The installer is interactive.
-10. **Tableau CLI (tabcmd 2.0)** — `pip install tabcmd` (requires Python from step 5). Verify with `tabcmd --version`.
 
 After installs, remind the user to **close and reopen PowerShell** so the new tools are on PATH.
 
@@ -174,7 +179,7 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
 9. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
-   - **Interactive (Rule 2):** asks "install Deno? [y/N]". Hand the user the `!`-prefixed command to run themselves.
+   - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** Same issue as macOS: the installer asks "install Deno?" and "install slack-cli?", both timing out under the Bash tool and silently failing. Hand off the `!`-prefixed command and tell the user to answer **y** to both prompts, then verify with `slack version`.
 
 ### Linux — Fedora / RHEL
 
@@ -185,7 +190,7 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 5. **Salesforce CLI** — `npm install -g @salesforce/cli`. Verify with `sf --version`.
 6. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
-   - **Interactive (Rule 2):** asks "install Deno? [y/N]". Hand the user the `!`-prefixed command to run themselves.
+   - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** Same issue as macOS: the installer asks "install Deno?" and "install slack-cli?", both timing out under the Bash tool and silently failing. Hand off the `!`-prefixed command and tell the user to answer **y** to both prompts, then verify with `slack version`.
 
 ## Phase 4 — Verify the toolchain and print a status report
 

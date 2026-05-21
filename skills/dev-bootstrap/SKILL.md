@@ -7,6 +7,65 @@ description: Install everything a new Tableau developer needs on a fresh laptop 
 
 You are helping a developer install the toolchain they need to start coding. Work through the phases below in order.
 
+## Phase 0 — Operating principles (apply throughout)
+
+Three rules that apply to **every** install and upgrade in this skill. Violating these wastes the user's time on failed commands.
+
+### Rule 1: Detect the package manager before installing or upgrading
+
+Tools can be installed multiple ways (brew, npm, pip, the official installer script). Running `npm install -g @salesforce/cli@latest` on a tool that was installed via `brew install sf` will fail with `EEXIST: file already exists`.
+
+Before installing or upgrading any tool, run a quick `which <tool>` and check the prefix:
+- `/opt/homebrew/bin/...` or `/usr/local/bin/...` on macOS → installed via brew. Use `brew upgrade <tool>`.
+- `~/Library/Python/...` or `/usr/local/lib/python.../site-packages/...` → installed via pip. Use `pip3 install -U <tool>`.
+- `~/.npm-global/` or under `node`'s global prefix → installed via npm. Use `npm i -g <tool>@latest`.
+- `~/.local/bin/slack` (or wherever the install script wrote it) → installed via the tool's own script. Re-run the official install script to upgrade.
+
+For these specific tools that have multiple install paths, **always check first**: `sf` (brew vs npm), `python3` (system vs brew vs pyenv), `node` (brew vs nvm vs system).
+
+### Rule 2: Anticipate PATH problems for pip user-installs on macOS
+
+`pip3 install <pkg>` on macOS using the system Python (3.9.x) writes binaries to `~/Library/Python/<version>/bin/`, which is **not on PATH by default**. The user installs `tabcmd` and then `tabcmd` doesn't work — confusing.
+
+Two ways to handle this. Pick one based on context:
+
+**Option A (preferred when brew Python is available):** install pip packages using brew's Python, which writes to `/opt/homebrew/bin/`:
+```
+brew install python   # if not already installed
+pip3 install --break-system-packages tabcmd   # uses brew python
+```
+
+**Option B (when only system Python is available):** before running `pip3 install`, detect the user-pip bin dir and append it to `~/.zshrc` if it isn't there. Then run the install. Tell the user a new shell or `source ~/.zshrc` is needed for tabcmd to be on PATH:
+```bash
+USER_PIP_BIN="$HOME/Library/Python/$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')/bin"
+if ! grep -q "$USER_PIP_BIN" ~/.zshrc 2>/dev/null; then
+  echo "export PATH=\"$USER_PIP_BIN:\$PATH\"" >> ~/.zshrc
+fi
+pip3 install tabcmd
+```
+
+Either way, **state explicitly to the user** that tabcmd may need a new terminal tab to appear on PATH.
+
+### Rule 3: Hand off interactive commands instead of running them via Bash
+
+The `Bash` tool runs commands non-interactively, so commands that need real terminal interaction will fail or hang. These include:
+
+- `brew install --cask <anything>` that triggers a sudo prompt (Docker, some other casks).
+- `gh auth login` (browser flow + paste a one-time code).
+- The Slack CLI install script (asks "install Deno? [y/N]").
+- The oh-my-zsh installer (asks to change your default shell).
+- `xcode-select --install` (opens a GUI dialog).
+
+**Do not attempt these via the Bash tool.** Instead, tell the user to run them in their Claude Code prompt with the `!` prefix, which routes the command to their actual terminal:
+
+> Docker Desktop install needs sudo. Run this in your prompt:
+>
+> `! brew install --cask docker`
+>
+> Once it finishes, let me know and I'll continue.
+
+Pause and wait for the user to confirm before continuing to the next step. Don't try, fail, then fall back — that wastes time and clutters output.
+
 ## Phase 1 — Detect the OS
 
 Run a quick check to detect the platform. Use the `Bash` tool:
@@ -63,11 +122,17 @@ Wait for the answer. Default to step-by-step if unclear.
 
 **Default behavior: install only what's missing. Never silently upgrade an already-installed tool** — even in run-everything mode. Major-version bumps (e.g. Node 18 → 22, Python 3.11 → 3.12) can break the user's existing projects.
 
-If the user explicitly asks to upgrade ("update everything", "get me on the latest", "upgrade node"), then upgrade — but tell them the current and target version before each one, and run the OS-appropriate upgrade command:
-- macOS Homebrew: `brew upgrade <pkg>` (or `brew upgrade --cask <pkg>` for casks like vscode)
+If the user explicitly asks to upgrade ("update everything", "get me on the latest", "upgrade node"), then upgrade — but tell them the current and target version before each one. **Apply Rule 1 from Phase 0**: run `which <tool>` first to determine which package manager owns the tool, then use the matching upgrade command:
+- Brew-managed (most things on macOS, including `sf` if installed via `brew install heroku/brew/sf`): `brew upgrade <pkg>` or `brew upgrade --cask <pkg>`
+- npm-managed globals: `npm i -g <pkg>@latest`
+- pip-managed: `pip3 install -U <pkg>`
+- Slack CLI (custom installer): re-run `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
+- Heroku CLI (Linux custom installer): re-run `curl https://cli-assets.heroku.com/install.sh | sh`
 - Windows winget: `winget upgrade --id <Id> -e`
-- Debian/Ubuntu: `sudo apt update && sudo apt install --only-upgrade -y <pkg>` (Heroku, Slack, tabcmd, sf are not apt-managed — re-run their install scripts / `npm i -g @salesforce/cli@latest` / `pip install -U tabcmd`)
-- Fedora/RHEL: `sudo dnf upgrade <pkg>`
+- Debian/Ubuntu apt: `sudo apt update && sudo apt install --only-upgrade -y <pkg>`
+- Fedora/RHEL dnf: `sudo dnf upgrade <pkg>`
+
+**Common gotcha:** if `which sf` returns a brew prefix, do NOT run `npm i -g @salesforce/cli@latest` — npm will fail with `EEXIST: file already exists`. Run `brew upgrade sf` instead.
 
 For **already-installed tools**, just say "skipping git (2.43 already installed)" and move on.
 
@@ -77,20 +142,23 @@ In **run-everything mode**: run the missing ones sequentially, surfacing only er
 ### macOS
 
 1. **Xcode Command Line Tools** — `xcode-select --install`
-   - This opens a GUI prompt. Tell the user to complete it before continuing. Verify with `xcode-select -p`.
+   - **Interactive (Rule 3):** opens a GUI dialog. Don't run via Bash. Hand the user `! xcode-select --install` to run in their prompt, then wait for them to confirm the dialog finished. Verify with `xcode-select -p`.
 2. **Homebrew** — `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-   - The installer prints two `eval` lines at the end specific to the user's Mac (Apple Silicon vs Intel). Run them, then `brew --version` to verify.
+   - **Interactive (Rule 3):** the installer asks for the user's sudo password and prints two `eval` lines specific to their Mac (Apple Silicon vs Intel). Hand the user `! /bin/bash -c "..."` to run themselves. Once it finishes, ask them to copy/run the two `eval` lines, then run `brew --version` to verify.
 3. **Git + GitHub CLI** — `brew install git gh`
 4. **Node.js (LTS)** — `brew install node`
 5. **Heroku CLI** — `brew install heroku/brew/heroku`
-6. **Python** — `brew install python` (or offer `brew install pyenv` if the user wants version management)
+6. **Python** — `brew install python` — **install this BEFORE tabcmd** so tabcmd can use brew's Python (Rule 2 Option A) and land in `/opt/homebrew/bin/`, already on PATH.
 7. **VS Code** — `brew install --cask visual-studio-code`
 8. **oh-my-zsh** — `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
-   - **Always confirm before installing**, even in run-everything mode — this rewrites the user's `~/.zshrc` and changes the default shell. The installer is interactive; warn the user it will prompt them.
-9. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 4). Verify with `sf --version`.
+   - **Interactive (Rule 3):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
+9. **Salesforce CLI** — `brew install heroku/brew/sf` (preferred — keeps `sf` brew-managed so future `update everything to latest` upgrades cleanly via `brew upgrade`). Fallback: `npm install -g @salesforce/cli`. Verify with `sf --version`.
 10. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
-    - The installer is interactive — it asks whether to install Deno. Tell the user to expect that prompt.
-11. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd` (requires Python from step 6). Verify with `tabcmd --version`.
+    - **Interactive (Rule 3):** asks "install Deno? [y/N]". Hand the user the `!`-prefixed command to run themselves.
+11. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd`. **Apply Rule 2** before running:
+    - If brew Python is installed (step 6 above ran): `which pip3` should return `/opt/homebrew/bin/pip3`. Safe to run `pip3 install tabcmd` and `tabcmd` will be on PATH.
+    - If only system Python is available: append the user-pip bin dir to `~/.zshrc` first (see Rule 2 Option B), then run the install, then tell the user to open a new terminal tab.
+    - Verify with `tabcmd --version` (or `~/Library/Python/3.9/bin/tabcmd --version` if PATH update is pending a new shell).
 
 ### Windows (PowerShell, not WSL)
 
@@ -124,9 +192,10 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 5. **Python** — `sudo apt install -y python3 python3-pip python3-venv`
 6. **VS Code** — `sudo snap install code --classic` (or guide them to the .deb if snap isn't available)
 7. **zsh + oh-my-zsh** — `sudo apt install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
-   - **Always confirm before installing**, even in run-everything mode — this rewrites `~/.zshrc` and changes the default shell. The installer is interactive.
+   - **Interactive (Rule 3):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
-9. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`. Interactive installer.
+9. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
+   - **Interactive (Rule 3):** asks "install Deno? [y/N]". Hand the user the `!`-prefixed command to run themselves.
 10. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd` (requires Python from step 5). Verify with `tabcmd --version`.
 
 ### Linux — Fedora / RHEL
@@ -134,9 +203,11 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 1. **Git, curl, GitHub CLI, Node** — `sudo dnf install -y git curl gh nodejs python3 python3-pip`
 2. **Heroku CLI** — `curl https://cli-assets.heroku.com/install.sh | sh`
 3. **VS Code** — guide them to `code` from the Microsoft repo (https://code.visualstudio.com/docs/setup/linux).
-4. **zsh + oh-my-zsh** — `sudo dnf install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`. **Always confirm before installing.**
+4. **zsh + oh-my-zsh** — `sudo dnf install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
+   - **Interactive (Rule 3):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 5. **Salesforce CLI** — `npm install -g @salesforce/cli`. Verify with `sf --version`.
 6. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
+   - **Interactive (Rule 3):** asks "install Deno? [y/N]". Hand the user the `!`-prefixed command to run themselves.
 7. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd`. Verify with `tabcmd --version`.
 
 ## Phase 4 — Verify the toolchain and print a status report
@@ -200,13 +271,13 @@ Never leave placeholder text like `"..."` or `"<name>"` in the command.
 
 Run `gh auth status` first. If it reports they're already logged in, skip to step 5.3.
 
-Otherwise, tell the user: "I'm going to log you into GitHub through `gh`. It'll open your browser and ask you to paste a one-time code. Follow the prompts."
+Otherwise, **`gh auth login` is interactive (Rule 3)** — it opens a browser flow and asks the user to paste a one-time code. Don't run it via the Bash tool; hand it off:
 
-Run:
-
-```
-gh auth login
-```
+> Run this in your prompt so it can drive your terminal:
+>
+> `! gh auth login`
+>
+> Pick the answers below as it prompts you, then let me know when it prints "Logged in as <username>".
 
 `gh` will ask:
 - **What account?** → GitHub.com (default)
@@ -214,7 +285,7 @@ gh auth login
 - **Authenticate Git with your GitHub credentials?** → **Yes**. This is the key answer that prevents Keychain pop-ups later.
 - **How would you like to authenticate?** → **Login with a web browser**. `gh` will print a one-time code and open the browser. Tell the user to paste the code, click through the auth prompts, and come back to the terminal.
 
-Wait for `gh` to print "Logged in as <username>" before continuing.
+Wait for the user to confirm `gh` printed "Logged in as <username>" before continuing.
 
 ### Step 5.3 — Set gh as the git credential helper
 

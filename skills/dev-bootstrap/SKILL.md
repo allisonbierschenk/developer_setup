@@ -46,7 +46,15 @@ Parse the output, then build a summary like:
 > Already installed: git 2.43, node 20.11, gh 2.40
 > Missing: heroku, python3, docker, sf, slack, tabcmd, oh-my-zsh
 
-Show that summary to the user, then ask exactly one question:
+Show that summary to the user, then determine the install mode:
+
+**Trigger phrases that skip the question entirely.** If the user's original request matches one of these, do NOT ask — just proceed in the matching mode:
+
+- **Run-everything mode** (no per-tool confirmation): "install everything", "install all", "set up everything", "bootstrap everything", "no confirmation", "don't ask me", "just install it", "yolo", "run it all".
+- **Step-by-step mode** (confirm before each install): "step by step", "one at a time", "confirm each", "ask me first", "walk me through it", "with confirmation".
+- **Update/upgrade mode**: "update everything", "upgrade everything", "update all to latest", "get me on the latest". Run upgrade commands instead of installs (see Phase 3 upgrade section). Treat this as run-everything mode for the upgrades themselves.
+
+If the request is ambiguous (e.g. just "set up my dev environment"), ask exactly one question:
 
 > Do you want me to **run everything missing in one pass**, or **walk through each missing step and confirm before I install it**? (I'll skip anything you already have unless you ask me to upgrade it.)
 

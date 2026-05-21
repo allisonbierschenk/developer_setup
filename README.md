@@ -70,16 +70,20 @@ If the path prints back, Claude Code will pick up the skill the next time it lau
 
 ## Step 4 — Open Claude Code and ask it to install your tools
 
-Open Claude Code, type the request below, and press Enter:
+Open Claude Code, type one of the requests below, and press Enter. **The wording you choose tells Claude which mode to run in** — pick the one that matches how hands-on you want to be.
 
-> set up my dev environment
+| If you want...                                                | Type this into Claude Code                          |
+| ------------------------------------------------------------- | --------------------------------------------------- |
+| **Install everything missing, no questions asked**            | `install everything for my dev environment`         |
+| **Walk me through each install one at a time, with confirmation** | `set up my dev environment step by step`        |
+| **Upgrade everything I already have to the latest version**   | `update everything to latest`                       |
+| Let Claude ask me which mode I want                           | `set up my dev environment`                         |
 
 Claude will:
 1. Detect your OS.
-2. Check what's already installed and what's missing.
-3. Ask: install everything missing in one pass, or one at a time with confirmation?
-4. Install the missing tools. (It pauses to confirm before oh-my-zsh — that one changes your shell.)
-5. Verify each tool installed correctly.
+2. Check what's already installed and what's missing (one combined permission prompt for the whole survey, not one per tool).
+3. Run installs in the mode you picked. (It pauses to confirm before oh-my-zsh either way — that one changes your shell.)
+4. Verify everything and print a status table at the end.
 
 ---
 
@@ -126,7 +130,25 @@ Some tools need one human action before they work. Claude will tell you which ap
 
 ## Updating the skill on your laptop
 
-Re-run the Step 2 command. It overwrites your local `SKILL.md` with the latest version.
+**Updates do not push to anyone automatically.** Each developer has their own copy of `SKILL.md` saved locally on their laptop. When someone (you or another contributor) edits the skill in this repo and pushes to `main`, that change only updates the version on GitHub — it does **not** reach into anyone else's `~/.claude/skills/` folder.
+
+To pull the latest version onto your laptop, re-run the Step 2 command:
+
+**macOS or Linux:**
+```
+curl -fsSL https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```
+irm https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/install.ps1 | iex
+```
+
+It overwrites your local `SKILL.md` with the latest version from `main`. Do this any time someone announces a skill update in Slack, or whenever you want the newest tool list.
+
+### How to let teammates know about updates
+
+If you push a meaningful change to the skill (new tool, fixed install command, etc.), drop a note in the team Slack channel telling everyone to re-run the Step 2 command. They won't get the update otherwise.
 
 ---
 

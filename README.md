@@ -29,33 +29,38 @@ Claude Code is the app that runs the skill. Install it from the team Slack canva
 
 This downloads `SKILL.md` from this repo and saves it to `~/.claude/skills/dev-bootstrap/SKILL.md` — the folder Claude Code reads from. Run once per laptop.
 
-Paste the command for your OS into your terminal (Terminal on macOS/Linux, PowerShell on Windows) and press Enter.
+**Open your default terminal app:**
+- macOS: open **Terminal** (Cmd + Space, type `Terminal`, Enter).
+- Windows: open **PowerShell** (Windows key, type `PowerShell`, Enter).
+- Linux: open your usual terminal.
 
-**macOS or Linux:**
-```bash
+**Then copy the single command line below for your OS, paste it at the prompt, and press Enter.** Don't type anything else first — no `bash`, no `cd`, nothing. Copy only the line in the gray box; do not include the triple backticks or the word `bash`/`powershell` above it.
+
+**macOS or Linux** — copy this one line:
+```
 curl -fsSL https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/install.sh | bash
 ```
 
-**Windows (PowerShell):**
-```powershell
+**Windows (PowerShell)** — copy this one line:
+```
 irm https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/install.ps1 | iex
 ```
 
-You should see a message like `Done. The skill is installed at: ...` followed by the full path on your laptop.
+When it finishes, you'll see a message like `Done. The skill is installed at: ...` followed by the full path on your laptop.
 
 ---
 
 ## Step 3 — Confirm Claude Code can find it
 
-A quick check that the file landed in the right place. Paste into the same terminal:
+A quick check that the file landed in the right place. Copy the single line for your OS, paste it at the same prompt, and press Enter.
 
 **macOS or Linux:**
-```bash
+```
 ls ~/.claude/skills/dev-bootstrap/SKILL.md
 ```
 
 **Windows (PowerShell):**
-```powershell
+```
 ls $HOME\.claude\skills\dev-bootstrap\SKILL.md
 ```
 

@@ -18,7 +18,30 @@ State the detected OS to the user in one sentence.
 
 ## Phase 2 — Survey what's already installed, then ask the install mode
 
-Before installing anything, run a quick detection pass for every tool in the list (`git --version`, `node -v`, `gh --version`, `heroku --version`, `python3 --version`, `docker --version`, `code --version`, `sf --version`, `slack version`, `tabcmd --version`, `brew --version` on macOS, `ls ~/.oh-my-zsh/oh-my-zsh.sh` for oh-my-zsh). Build a summary like:
+**Run the detection pass as a single Bash command, not one-per-tool.** The user gets one permission prompt instead of a dozen. Each line uses `||` so a missing tool reports `MISSING: <name>` instead of failing the whole script.
+
+On macOS / Linux, run this as one Bash invocation:
+
+```bash
+echo "=== Toolchain survey ===" && \
+{ git --version 2>/dev/null || echo "MISSING: git"; } && \
+{ node -v 2>/dev/null && echo "node ok" || echo "MISSING: node"; } && \
+{ npm -v 2>/dev/null && echo "npm ok" || echo "MISSING: npm"; } && \
+{ gh --version 2>/dev/null | head -1 || echo "MISSING: gh"; } && \
+{ heroku --version 2>/dev/null || echo "MISSING: heroku"; } && \
+{ python3 --version 2>/dev/null || echo "MISSING: python3"; } && \
+{ docker --version 2>/dev/null || echo "MISSING: docker"; } && \
+{ code --version 2>/dev/null | head -1 || echo "MISSING: code"; } && \
+{ sf --version 2>/dev/null || echo "MISSING: sf"; } && \
+{ slack version 2>/dev/null || echo "MISSING: slack"; } && \
+{ tabcmd --version 2>/dev/null || echo "MISSING: tabcmd"; } && \
+{ brew --version 2>/dev/null | head -1 || echo "MISSING: brew (macOS only)"; } && \
+{ test -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" && echo "oh-my-zsh installed" || echo "MISSING: oh-my-zsh"; }
+```
+
+On Windows, run an equivalent single PowerShell command via `powershell -Command "..."`. Use `$ErrorActionPreference = 'SilentlyContinue'` and write missing-tool lines the same way.
+
+Parse the output, then build a summary like:
 
 > Already installed: git 2.43, node 20.11, gh 2.40
 > Missing: heroku, python3, docker, sf, slack, tabcmd, oh-my-zsh
@@ -114,27 +137,39 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 7. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
 8. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd`. Verify with `tabcmd --version`.
 
-## Phase 4 — Verify the toolchain
+## Phase 4 — Verify the toolchain and print a status report
 
-After all installs, run this verification block and surface any tool that errors:
+**Run all verifications as a single Bash command, not one-per-tool** — same approach as Phase 2. The user should see one permission prompt, not twelve.
+
+Reuse the exact same single-command block from Phase 2 (the `echo "=== Toolchain survey ===" && { git --version ... }` chain). Capture the output and parse it into a status table.
+
+**Format the report as a table** so the user can see everything at a glance. Use ✓ for installed and ✗ for missing/errored. Example:
 
 ```
-git --version
-node -v
-npm -v
-heroku --version
-gh --version
-python3 --version    # or `python --version` on Windows
-docker --version
-code --version
-sf --version
-slack version
-tabcmd --version
+Toolchain status
+─────────────────────────────────────────────
+✓  git           2.43.0
+✓  node          v20.11.1
+✓  npm           10.2.4
+✓  gh            2.40.1
+✓  heroku        9.4.0
+✓  python3       3.12.2
+✓  docker        Docker version 24.0.7
+✓  code          1.86.0
+✓  sf            @salesforce/cli/2.27.6
+✗  slack         not found
+✓  tabcmd        2.0.13
+✓  oh-my-zsh     installed
+─────────────────────────────────────────────
+11 of 12 installed. 1 missing: slack
 ```
 
-oh-my-zsh has no `--version` flag; verify it by checking the file exists: `ls ~/.oh-my-zsh/oh-my-zsh.sh`.
+After the table, if anything is missing or errored:
+1. Tell the user which tools failed.
+2. Offer to re-run those specific installs.
+3. Mention the most common macOS gotcha if relevant: Homebrew prints two `eval` lines after install — if those weren't run, `brew`-installed tools won't be on PATH yet. Suggest opening a new terminal tab or running the two `eval` lines from Phase 3 step 2.
 
-If any command fails, walk back through that tool's install and try again. On macOS, a common cause is forgetting to run the two `eval` lines Homebrew printed — re-run them and re-check.
+If everything passes, say so plainly: "All 12 tools verified. You're ready to code."
 
 ## Phase 5 — Wrap up
 

@@ -79,23 +79,31 @@ State the detected OS to the user in one sentence.
 
 **Run the detection pass as a single Bash command, not one-per-tool.** The user gets one permission prompt instead of a dozen. Each line uses `||` so a missing tool reports `MISSING: <name>` instead of failing the whole script.
 
-On macOS / Linux, run this as one Bash invocation:
+On macOS / Linux, run this as one Bash invocation. It prints a colored, padded table using ANSI escape codes — green ✓ for installed tools, red ✗ for missing ones — so the user can scan it instantly:
 
 ```bash
-echo "=== Toolchain survey ===" && \
-{ git --version 2>/dev/null || echo "MISSING: git"; } && \
-{ node -v 2>/dev/null && echo "node ok" || echo "MISSING: node"; } && \
-{ npm -v 2>/dev/null && echo "npm ok" || echo "MISSING: npm"; } && \
-{ gh --version 2>/dev/null | head -1 || echo "MISSING: gh"; } && \
-{ heroku --version 2>/dev/null || echo "MISSING: heroku"; } && \
-{ python3 --version 2>/dev/null || echo "MISSING: python3"; } && \
-{ code --version 2>/dev/null | head -1 || echo "MISSING: code"; } && \
-{ sf --version 2>/dev/null || echo "MISSING: sf"; } && \
-{ slack version 2>/dev/null || echo "MISSING: slack"; } && \
-{ tabcmd --version 2>/dev/null || echo "MISSING: tabcmd"; } && \
-{ brew --version 2>/dev/null | head -1 || echo "MISSING: brew (macOS only)"; } && \
-{ test -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" && echo "oh-my-zsh installed" || echo "MISSING: oh-my-zsh"; }
+G=$'\033[32m'; R=$'\033[31m'; C=$'\033[36m'; D=$'\033[2m'; B=$'\033[1m'; X=$'\033[0m'; \
+row(){ local name=$1 ver=$2; if [ -n "$ver" ]; then printf "  ${G}✓${X} ${B}%-12s${X} ${C}%s${X}\n" "$name" "$ver"; else printf "  ${R}✗${X} ${B}%-12s${X} ${D}not found${X}\n" "$name"; fi; }; \
+printf "\n${B}Toolchain status${X}\n${D}─────────────────────────────────────────────${X}\n"; \
+row git       "$(git --version 2>/dev/null | awk '{print $3}')"; \
+row node      "$(node -v 2>/dev/null)"; \
+row npm       "$(npm -v 2>/dev/null)"; \
+row gh        "$(gh --version 2>/dev/null | head -1 | awk '{print $3}')"; \
+row heroku    "$(heroku --version 2>/dev/null | awk '{print $1}')"; \
+row python3   "$(python3 --version 2>/dev/null | awk '{print $2}')"; \
+row code      "$(code --version 2>/dev/null | head -1)"; \
+row sf        "$(sf --version 2>/dev/null | awk '{print $1}')"; \
+row slack     "$(slack version 2>/dev/null | awk '{print $NF}')"; \
+row tabcmd    "$(tabcmd --version 2>/dev/null | grep -i 'tableau\|version' | tail -1 | awk '{print $NF}')"; \
+row brew      "$(brew --version 2>/dev/null | head -1 | awk '{print $2}')"; \
+row oh-my-zsh "$([ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ] && echo installed)"; \
+printf "${D}─────────────────────────────────────────────${X}\n\n"
 ```
+
+Notes for parsing the output:
+- A green ✓ followed by a version means the tool is installed.
+- A red ✗ followed by `not found` means it's missing — use that to build the install list.
+- The colors render in the user's terminal *and* in your tool output, so you don't need to reformat into a separate table afterward — just point at it and tell the user the count (e.g. "10 of 12 installed, missing: slack, tabcmd").
 
 On Windows, run an equivalent single PowerShell command via `powershell -Command "..."`. Use `$ErrorActionPreference = 'SilentlyContinue'` and write missing-tool lines the same way.
 
@@ -212,31 +220,13 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 
 ## Phase 4 — Verify the toolchain and print a status report
 
-**Run all verifications as a single Bash command, not one-per-tool** — same approach as Phase 2. The user should see one permission prompt, not twelve.
+**Re-run the exact same colored-table command from Phase 2** — one Bash invocation, one permission prompt. The output is already a formatted, color-coded table; don't reformat it into a different table afterward (that just duplicates the info and loses the colors).
 
-Reuse the exact same single-command block from Phase 2 (the `echo "=== Toolchain survey ===" && { git --version ... }` chain). Capture the output and parse it into a status table.
+After the table prints, summarize in one line: how many installed, which (if any) are missing. Example:
 
-**Format the report as a table** so the user can see everything at a glance. Use ✓ for installed and ✗ for missing/errored. Example:
+> 10 of 12 installed. Missing: slack, tabcmd.
 
-```
-Toolchain status
-─────────────────────────────────────────────
-✓  git           2.43.0
-✓  node          v20.11.1
-✓  npm           10.2.4
-✓  gh            2.40.1
-✓  heroku        9.4.0
-✓  python3       3.12.2
-✓  code          1.86.0
-✓  sf            @salesforce/cli/2.27.6
-✗  slack         not found
-✓  tabcmd        2.0.13
-✓  oh-my-zsh     installed
-─────────────────────────────────────────────
-10 of 11 installed. 1 missing: slack
-```
-
-After the table, if anything is missing or errored:
+If anything is missing or errored:
 1. Tell the user which tools failed.
 2. Offer to re-run those specific installs.
 3. Mention the most common macOS gotcha if relevant: Homebrew prints two `eval` lines after install — if those weren't run, `brew`-installed tools won't be on PATH yet. Suggest opening a new terminal tab or running the two `eval` lines from Phase 3 step 2.

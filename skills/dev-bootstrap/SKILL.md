@@ -68,7 +68,7 @@ row npm       "$(npm -v 2>/dev/null)"; \
 row gh        "$(gh --version 2>/dev/null | head -1 | awk '{print $3}')"; \
 row heroku    "$(heroku --version 2>/dev/null | awk '{print $1}')"; \
 row python3   "$(python3 --version 2>/dev/null | awk '{print $2}')"; \
-row code      "$(code --version 2>/dev/null | head -1)"; \
+row vscode    "$(code --version 2>/dev/null | head -1)"; \
 row sf        "$(sf --version 2>/dev/null | awk '{print $1}')"; \
 row slack     "$(slack version 2>/dev/null | awk '{print $NF}')"; \
 row brew      "$(brew --version 2>/dev/null | head -1 | awk '{print $2}')"; \

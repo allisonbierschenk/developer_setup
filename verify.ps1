@@ -31,7 +31,7 @@ Row "npm"       (Get-Ver npm -v)
 Row "gh"        (Get-Ver gh --version)
 Row "heroku"    (Get-Ver heroku --version)
 Row "python"    (Get-Ver python --version)
-Row "code"      (Get-Ver code --version)
+Row "vscode"    (Get-Ver code --version)
 Row "sf"        (Get-Ver sf --version)
 Row "slack"     (Get-Ver slack version)
 

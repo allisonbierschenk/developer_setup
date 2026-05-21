@@ -135,20 +135,19 @@ In **run-everything mode**: run the missing ones sequentially, surfacing only er
 7. **VS Code** — `brew install --cask visual-studio-code`
 8. **oh-my-zsh** — `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
-   - **CRITICAL — install oh-my-zsh BEFORE Slack CLI.** oh-my-zsh overwrites `~/.zshrc` with its template, which has `export PATH=$HOME/.local/bin:$PATH` **commented out** by default. If Slack CLI runs first and appends its PATH line, oh-my-zsh wipes it out and `slack` silently disappears from PATH. Doing oh-my-zsh first lets the Slack installer append cleanly to the new `.zshrc` afterward.
 9. **Salesforce CLI** — `brew install heroku/brew/sf` (preferred — keeps `sf` brew-managed so future `update everything to latest` upgrades cleanly via `brew upgrade`). Fallback: `npm install -g @salesforce/cli`. Verify with `sf --version`.
 10. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
-    - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** The installer prompts "install Deno? [y/N]" and "install slack-cli to /usr/local/bin? [y/N]". If you run it through the Bash tool, both prompts time out, the script exits silently, and **`slack` never lands on PATH**. The user thinks it installed when nothing happened. Always hand it off:
+    - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** The installer prompts "install Deno? [y/N]" and "install slack-cli to /usr/local/bin? [y/N]". If you run it through the Bash tool, both prompts time out, the script exits silently, and **`slack` never lands on PATH**. Always hand it off:
       > Slack CLI's installer needs to ask you a couple of questions. Run this in your prompt:
       >
       > `! curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
       >
       > Answer **y** to both prompts. Tell me when it prints "Slack CLI installed".
-    - After they confirm, **verify `slack version` works**. If it errors with "command not found", the cause is almost always the oh-my-zsh `.zshrc` template — it ships with `export PATH=$HOME/.local/bin:$PATH` commented out on line 2, and Slack CLI installs to `~/.local/bin/slack`. Fix it:
+    - **After install, the binary is at `~/.local/bin/slack` but PATH is broken if oh-my-zsh is installed.** oh-my-zsh's `.zshrc` template ships line 2 as `# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH` (commented out), so `slack` won't be found. Verified in a Docker test 2026-05-21 that this happens regardless of install order. **Always run this fix after Slack install if oh-my-zsh is present:**
       ```bash
-      sed -i '' 's|^# export PATH=\$HOME/.local/bin:\$PATH|export PATH=$HOME/.local/bin:$PATH|' ~/.zshrc
+      sed -i '' 's|^# export PATH=\$HOME/bin:\$HOME/.local/bin:/usr/local/bin:\$PATH|export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH|' ~/.zshrc
       ```
-      Then tell the user to open a new terminal tab (or run `source ~/.zshrc`) and re-run `slack version`.
+      Then tell the user to open a new terminal tab (or run `source ~/.zshrc`) and re-run `slack version` to confirm.
 
 ### Windows (PowerShell, not WSL)
 
@@ -182,15 +181,14 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 6. **VS Code** — `sudo snap install code --classic` (or guide them to the .deb if snap isn't available)
 7. **zsh + oh-my-zsh** — `sudo apt install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
-   - **CRITICAL — install oh-my-zsh BEFORE Slack CLI** (same `~/.local/bin` PATH overwrite issue as macOS — see macOS step 8 for details).
 8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
 9. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
-   - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** Same issue as macOS: the installer asks "install Deno?" and "install slack-cli?", both timing out under the Bash tool and silently failing. Hand off the `!`-prefixed command and tell the user to answer **y** to both prompts, then verify with `slack version`.
-   - If `slack version` errors after install, oh-my-zsh's `.zshrc` template has the `~/.local/bin` PATH line commented out. Fix on Linux:
+   - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** Same issue as macOS: the installer asks "install Deno?" and "install slack-cli?", both timing out under the Bash tool and silently failing. Hand off the `!`-prefixed command and tell the user to answer **y** to both prompts.
+   - **After install, the binary is at `~/.local/bin/slack` but PATH is broken if oh-my-zsh is installed.** oh-my-zsh's `.zshrc` template ships line 2 as `# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH` (commented out), so `slack` won't be found. Verified in a Docker test 2026-05-21 that this happens regardless of install order. **Always run this fix after Slack install if oh-my-zsh is present:**
      ```bash
-     sed -i 's|^# export PATH=\$HOME/.local/bin:\$PATH|export PATH=$HOME/.local/bin:$PATH|' ~/.zshrc
+     sed -i 's|^# export PATH=\$HOME/bin:\$HOME/.local/bin:/usr/local/bin:\$PATH|export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH|' ~/.zshrc
      ```
-     Then tell the user to open a new terminal tab (or run `source ~/.zshrc`).
+     Then tell the user to open a new terminal tab (or run `source ~/.zshrc`) and re-run `slack version` to confirm.
 
 ### Linux — Fedora / RHEL
 
@@ -199,15 +197,14 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 3. **VS Code** — guide them to `code` from the Microsoft repo (https://code.visualstudio.com/docs/setup/linux).
 4. **zsh + oh-my-zsh** — `sudo dnf install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
-   - **CRITICAL — install oh-my-zsh BEFORE Slack CLI** (same `~/.local/bin` PATH overwrite issue as macOS — see macOS step 8 for details).
 5. **Salesforce CLI** — `npm install -g @salesforce/cli`. Verify with `sf --version`.
 6. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
-   - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** Same issue as macOS: the installer asks "install Deno?" and "install slack-cli?", both timing out under the Bash tool and silently failing. Hand off the `!`-prefixed command and tell the user to answer **y** to both prompts, then verify with `slack version`.
-   - If `slack version` errors after install, oh-my-zsh's `.zshrc` template has the `~/.local/bin` PATH line commented out. Fix on Linux:
+   - **Interactive (Rule 2) — DO NOT RUN VIA BASH.** Same issue as macOS: the installer asks "install Deno?" and "install slack-cli?", both timing out under the Bash tool and silently failing. Hand off the `!`-prefixed command and tell the user to answer **y** to both prompts.
+   - **After install, the binary is at `~/.local/bin/slack` but PATH is broken if oh-my-zsh is installed.** oh-my-zsh's `.zshrc` template ships line 2 as `# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH` (commented out), so `slack` won't be found. Verified in a Docker test 2026-05-21 that this happens regardless of install order. **Always run this fix after Slack install if oh-my-zsh is present:**
      ```bash
-     sed -i 's|^# export PATH=\$HOME/.local/bin:\$PATH|export PATH=$HOME/.local/bin:$PATH|' ~/.zshrc
+     sed -i 's|^# export PATH=\$HOME/bin:\$HOME/.local/bin:/usr/local/bin:\$PATH|export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH|' ~/.zshrc
      ```
-     Then tell the user to open a new terminal tab (or run `source ~/.zshrc`).
+     Then tell the user to open a new terminal tab (or run `source ~/.zshrc`) and re-run `slack version` to confirm.
 
 ## Phase 4 — Verify the toolchain and print a status report
 

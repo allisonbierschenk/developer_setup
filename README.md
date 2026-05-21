@@ -156,7 +156,7 @@ This kicks off the SSO flow in your browser. **MFA is required** — you should 
 
 ---
 
-## Verifying your toolchain any time
+## Step 8 - Verifying your toolchain any time
 
 Claude prints a colored status table at the end of the bootstrap, but you can also run it yourself whenever. Paste the line for your OS into your terminal:
 

@@ -70,9 +70,9 @@ If the path prints back, Claude Code will pick up the skill the next time it lau
 
 ## Step 4 — Open Claude Code and ask it to install your tools
 
-Start Claude Code by running `claude` in your terminal. 
+a. Start Claude Code by running `claude` in your terminal. 
 
-Then type one of the requests below, and press Enter. **The wording you choose tells Claude which mode to run in** — pick the one that matches how hands-on you want to be.
+b. Then type one of the requests below, and press Enter. **The wording you choose tells Claude which mode to run in** — pick the one that matches how hands-on you want to be.
 
 | If you want...                                                | Type this into Claude Code                          |
 | ------------------------------------------------------------- | --------------------------------------------------- |
@@ -87,7 +87,8 @@ Claude will:
 3. Run installs in the mode you picked. (It pauses to confirm before oh-my-zsh either way — that one changes your shell.)
 4. Verify everything and print a status table at the end.
 
-A few installs need *your* terminal (sudo prompts, browser flows). When Claude hits one, it'll hand you a command starting with `!` — paste that into your Claude Code prompt and press Enter. Examples: Xcode Command Line Tools, Homebrew, oh-my-zsh, Slack CLI, `gh auth login`.
+A few installs need *your help in a new terminal tab* 
+ `gh auth login`.
 
 ---
 

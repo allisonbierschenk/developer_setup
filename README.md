@@ -70,7 +70,10 @@ If the path prints back, Claude Code will pick up the skill the next time it lau
 
 ## Step 4 — Open Claude Code and ask it to install your tools
 
-Open Claude Code, type one of the requests below, and press Enter. **The wording you choose tells Claude which mode to run in** — pick the one that matches how hands-on you want to be.
+Turn on Claude Code
+| Type this into Claude | `claude`
+
+Then type one of the requests below, and press Enter. **The wording you choose tells Claude which mode to run in** — pick the one that matches how hands-on you want to be.
 
 | If you want...                                                | Type this into Claude Code                          |
 | ------------------------------------------------------------- | --------------------------------------------------- |

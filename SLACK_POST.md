@@ -2,7 +2,7 @@
 
 No more copy-pasting a dozen commands — Claude does it for you.
 
-*What you'll end up with:* git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0). Plus GitHub auth set up so `git push` doesn't pop up Keychain prompts.
+*What you'll end up with:* git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, and Slack CLI. Plus GitHub auth set up so `git push` doesn't pop up Keychain prompts.
 
 *Works on:* macOS, Windows, Linux.
 

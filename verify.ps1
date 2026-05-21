@@ -34,7 +34,6 @@ Row "python"    (Get-Ver python --version)
 Row "code"      (Get-Ver code --version)
 Row "sf"        (Get-Ver sf --version)
 Row "slack"     (Get-Ver slack version)
-Row "tabcmd"    (Get-Ver tabcmd --version)
 
 Write-Host "─────────────────────────────────────────────" -ForegroundColor DarkGray
 Write-Host ""

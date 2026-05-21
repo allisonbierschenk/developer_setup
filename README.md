@@ -1,6 +1,6 @@
 # developer_setup
 
-A Claude Code skill that installs everything a developer needs on a laptop — git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0). Then it walks you through GitHub authentication so `git push` and `git pull` work without password pop-ups.
+A Claude Code skill that installs everything a developer needs on a laptop — git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, and Slack CLI. Then it walks you through GitHub authentication so `git push` and `git pull` work without password pop-ups.
 
 Works on macOS, Windows, and Linux.
 
@@ -149,7 +149,6 @@ You'll get a ✓/✗ table showing which tools are installed and their versions 
 | oh-my-zsh      | ohmyzsh install.sh                       | (use WSL2 + Linux flow)              | `zsh` + ohmyzsh install.sh          |
 | Salesforce CLI | `npm i -g @salesforce/cli`               | `npm i -g @salesforce/cli`           | `npm i -g @salesforce/cli`          |
 | Slack CLI      | `slack-cli/install.sh`                   | `slack-cli/install-windows.ps1`      | `slack-cli/install.sh`              |
-| tabcmd 2.0     | `pip3 install tabcmd`                    | `pip install tabcmd`                 | `pip3 install tabcmd`               |
 | GitHub auth    | `gh auth login` + `gh auth setup-git`    | same                                 | same                                |
 
 ---
@@ -161,7 +160,7 @@ You'll get a ✓/✗ table showing which tools are installed and their versions 
 | Some tools, missing others   | Installs only what's missing.                                                             |
 | An older version of a tool   | Skips it. Tells you the version it found.                                                 |
 | You want it upgraded         | Ask: "upgrade node" or "update everything to latest". Claude uses the right upgrade command. |
-| Nothing installed            | Installs everything in dependency order (Node before Salesforce CLI, Python before tabcmd). |
+| Nothing installed            | Installs everything in dependency order (Node before Salesforce CLI). |
 
 ---
 

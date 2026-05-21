@@ -39,22 +39,19 @@ Claude will detect your OS, check what you already have, install what's missing,
 A few installs need *your* terminal (sudo prompts, browser flows). When Claude hits one, it'll hand you a command starting with `!` — paste that into your Claude Code prompt and press Enter. Examples: Xcode Command Line Tools, Homebrew, oh-my-zsh, Slack CLI, `gh auth login`.
 
 *Step 4 — Verify*
-Claude prints a status table for you, but if you want to double-check manually, paste this into your terminal:
+Claude prints a status table for you, but you can also run it yourself any time. Paste the line for your OS into your terminal and you'll get a colored ✓/✗ table of every tool and its version.
+
+macOS or Linux:
 ```
-git --version
-node -v
-npm -v
-heroku --version
-gh --version
-sf --version
-slack version
-tabcmd --version
-python3 --version
-code --version
+curl -fsSL https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/verify.sh | bash
+```
+
+Windows (PowerShell):
+```
+irm https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/verify.ps1 | iex
 ```
 
 ---
 
-*Updates:* the skill on your laptop is a static copy — re-run the Step 2 command any time to pull the latest version. No automatic updates.
+*Skill Updates:* the skill on your laptop is a static copy — re-run the Step 2 command any time to pull in the latest version. No automatic updates.
 
-*Issues?* Drop a thread in this channel. The repo is at <https://github.com/allisonbierschenk/developer_setup|allisonbierschenk/developer_setup>.

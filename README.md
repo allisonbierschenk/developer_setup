@@ -112,6 +112,24 @@ Some tools need one human action before they work. Claude will tell you which ap
 
 ---
 
+## Verifying your toolchain any time
+
+Claude prints a colored status table at the end of the bootstrap, but you can also run it yourself whenever. Paste the line for your OS into your terminal:
+
+**macOS or Linux:**
+```
+curl -fsSL https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/verify.sh | bash
+```
+
+**Windows (PowerShell):**
+```
+irm https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/verify.ps1 | iex
+```
+
+You'll get a ✓/✗ table showing which tools are installed and their versions — green for installed, red for missing.
+
+---
+
 ## What gets installed
 
 | Tool           | macOS                                    | Windows                              | Linux (apt / dnf)                   |
@@ -174,6 +192,8 @@ developer_setup/
 ├── README.md
 ├── install.sh                       # mac/linux bootstrap (curl | bash)
 ├── install.ps1                      # windows bootstrap (irm | iex)
+├── verify.sh                        # mac/linux toolchain check (colored table)
+├── verify.ps1                       # windows toolchain check (colored table)
 └── skills/
     └── dev-bootstrap/
         └── SKILL.md                 # the skill Claude Code reads

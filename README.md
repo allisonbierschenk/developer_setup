@@ -85,6 +85,8 @@ Claude will:
 3. Run installs in the mode you picked. (It pauses to confirm before oh-my-zsh either way — that one changes your shell.)
 4. Verify everything and print a status table at the end.
 
+A few installs need *your* terminal (sudo prompts, browser flows). When Claude hits one, it'll hand you a command starting with `!` — paste that into your Claude Code prompt and press Enter. Examples: Xcode Command Line Tools, Homebrew, oh-my-zsh, Slack CLI, `gh auth login`.
+
 ---
 
 ## Step 5 — Authenticate with GitHub

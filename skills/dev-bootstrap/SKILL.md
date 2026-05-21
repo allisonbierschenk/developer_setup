@@ -133,6 +133,11 @@ In **run-everything mode**: run the missing ones sequentially, surfacing only er
 5. **Heroku CLI** — `brew install heroku/brew/heroku`
 6. **Python** — `brew install python`
 7. **VS Code** — `brew install --cask visual-studio-code`
+   - **After install, verify the `code` shell command works.** Run `code --version`. If it prints a version, you're done. If it errors with "command not found", the brew cask didn't symlink it into PATH — recover with:
+     ```bash
+     ln -sf "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
+     ```
+     (On Apple Silicon Macs without `/usr/local/bin` writeable, use `ln -sf "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /opt/homebrew/bin/code` instead.) Re-run `code --version` to confirm.
 8. **oh-my-zsh** — `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 9. **Salesforce CLI** — `brew install heroku/brew/sf` (preferred — keeps `sf` brew-managed so future `update everything to latest` upgrades cleanly via `brew upgrade`). Fallback: `npm install -g @salesforce/cli`. Verify with `sf --version`.
@@ -159,6 +164,7 @@ Run each via the `Bash` tool by invoking `powershell -Command "..."`, or instruc
 4. **Heroku CLI** — `winget install --id Heroku.HerokuCLI -e`
 5. **Python** — `winget install --id Python.Python.3.12 -e`
 6. **VS Code** — `winget install --id Microsoft.VisualStudioCode -e`
+   - **The `code` command requires a fresh shell.** winget's VS Code installer adds `code` to PATH, but the change doesn't apply to the current PowerShell session. After install, tell the user to **close and reopen PowerShell**, then run `code --version` to confirm. If it still errors, the user likely unchecked "Add to PATH" in the installer's advanced options — re-run the installer or add `C:\Users\<user>\AppData\Local\Programs\Microsoft VS Code\bin` to PATH manually.
 7. **oh-my-zsh** — Skip on native Windows. Tell the user oh-my-zsh requires zsh, which isn't standard on Windows; they'd need WSL2 (which uses the Linux flow) or Git Bash with zsh. Don't try to install it on plain PowerShell.
 8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
 9. **Slack CLI** — `irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex` (run in PowerShell). The installer is interactive.
@@ -178,7 +184,8 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
    ```
 4. **Heroku CLI** — `curl https://cli-assets.heroku.com/install.sh | sh`
 5. **Python** — `sudo apt install -y python3 python3-pip python3-venv`
-6. **VS Code** — `sudo snap install code --classic` (or guide them to the .deb if snap isn't available)
+6. **VS Code** — `sudo snap install code --classic` (or guide them to the `.deb` from https://code.visualstudio.com/docs/setup/linux if snap isn't available).
+   - **After install, verify with `code --version`.** Both the snap and the Microsoft `.deb` add `code` to PATH automatically. If it errors, tell the user to open a new terminal tab and try again (snap PATH only loads in new shells).
 7. **zsh + oh-my-zsh** — `sudo apt install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
@@ -194,7 +201,13 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
 
 1. **Git, curl, GitHub CLI, Node** — `sudo dnf install -y git curl gh nodejs python3 python3-pip`
 2. **Heroku CLI** — `curl https://cli-assets.heroku.com/install.sh | sh`
-3. **VS Code** — guide them to `code` from the Microsoft repo (https://code.visualstudio.com/docs/setup/linux).
+3. **VS Code** — install from the Microsoft repo so `code` is on PATH:
+   ```bash
+   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+   sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
+   sudo dnf install -y code
+   ```
+   Verify with `code --version`. The rpm package adds `code` to PATH automatically; if the command isn't found, open a new terminal tab and try again.
 4. **zsh + oh-my-zsh** — `sudo dnf install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
    - **Interactive (Rule 2):** rewrites `~/.zshrc`, prompts to change default shell. Hand the user `! sh -c "$(curl ...)"` to run themselves. Always confirm before this step even in run-everything mode.
 5. **Salesforce CLI** — `npm install -g @salesforce/cli`. Verify with `sf --version`.

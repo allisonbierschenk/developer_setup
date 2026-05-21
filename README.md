@@ -34,7 +34,7 @@ This downloads `SKILL.md` from this repo and saves it to `~/.claude/skills/dev-b
 - Windows: open **PowerShell** (Windows key, type `PowerShell`, Enter).
 - Linux: open your usual terminal.
 
-**Then copy the single command line below for your OS, paste it at the prompt, and press Enter.** Don't type anything else first — no `bash`, no `cd`, nothing. Copy only the line in the gray box; do not include the triple backticks or the word `bash`/`powershell` above it.
+**Then copy the single command line below for your OS, paste it at the prompt, and press Enter.
 
 **macOS or Linux** — copy this one line:
 ```
@@ -46,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/allisonbierschenk/developer_setup/m
 irm https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main/install.ps1 | iex
 ```
 
-When it finishes, you'll see a message like `Done. The skill is installed at: ...` followed by the full path on your laptop.
+When it finishes, you'll see a green **✓ Skill installed** message followed by the full path on your laptop. **Don't open Claude Code yet** — first run Step 3 below to confirm the file landed in the right place.
 
 ---
 

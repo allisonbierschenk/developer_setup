@@ -26,5 +26,4 @@ fi
 printf "\n${G}${B}✓ Skill installed${X}\n"
 printf "${D}  %s/SKILL.md${X}\n\n" "$DEST"
 
-printf "${B}Next:${X} open Claude Code and ask it to ${C}\"set up my dev environment\"${X}.\n"
-printf "      Claude will detect your OS and walk you through the install.\n\n"
+printf "${B}Next:${X} run Step 3 in the README to confirm Claude Code can find the skill.\n\n"

@@ -30,6 +30,5 @@ Write-Host "✓ Skill installed" -ForegroundColor Green
 Write-Host "  $Dest\SKILL.md" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "Next: " -NoNewline
-Write-Host 'open Claude Code and ask it to "set up my dev environment".'
-Write-Host "      Claude will detect your OS and walk you through the install."
+Write-Host "run Step 3 in the README to confirm Claude Code can find the skill."
 Write-Host ""

@@ -1,6 +1,6 @@
 # developer_setup
 
-A Claude Code skill that installs everything a developer needs on a laptop — git, GitHub CLI, Node.js, Heroku CLI, Python, Docker Desktop, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0). 
+A Claude Code skill that installs everything a developer needs on a laptop — git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0). Then it walks you through GitHub authentication so `git push` and `git pull` work without password pop-ups.
 
 Works on macOS, Windows, and Linux.
 
@@ -87,13 +87,28 @@ Claude will:
 
 ---
 
-## Step 5 — Finish any manual steps Claude flags
+## Step 5 — Authenticate with GitHub
+
+Once tools are installed, Claude walks you through GitHub setup automatically. **Don't skip this** — it's the difference between `git push` working silently and `git push` triggering macOS Keychain pop-ups every time.
+
+Claude will:
+
+1. **Set your git identity** — ask for your name and the email you use on GitHub, then run `git config --global user.name "..."` and `git config --global user.email "..."` for you.
+2. **Log you into the GitHub CLI** — run `gh auth login`, which opens your browser and asks you to paste a one-time code. Pick **HTTPS** when prompted, and answer **Yes** to "Authenticate Git with your GitHub credentials?"
+3. **Make `gh` the git credential helper** — runs `gh auth setup-git` so git stops asking for a password (no more macOS Keychain pop-ups).
+4. **Verify it works** — runs `gh auth status` and `gh repo list` to confirm. If repos print without a prompt, you're set.
+
+The whole walkthrough takes about 60 seconds and Claude does the typing — you just answer the prompts.
+
+---
+
+## Step 6 — Finish any manual steps Claude flags
 
 Some tools need one human action before they work. Claude will tell you which apply:
 
-- **macOS:** Click through the Xcode Command Line Tools GUI prompt. Open Docker Desktop once.
-- **Windows:** Close and reopen PowerShell.
-- **Linux:** Log out and back in (so docker group takes effect).
+- **macOS:** Click through the Xcode Command Line Tools GUI prompt.
+- **Windows:** Close and reopen PowerShell so the new tools are on PATH.
+- **Linux:** Log out and back in (so any group changes take effect).
 
 ---
 
@@ -108,12 +123,12 @@ Some tools need one human action before they work. Claude will tell you which ap
 | Node.js (LTS)  | `brew install node`                      | `winget OpenJS.NodeJS.LTS`           | NodeSource / `nodejs`               |
 | Heroku CLI     | `brew install heroku/brew/heroku`        | `winget Heroku.HerokuCLI`            | `cli-assets.heroku.com/install.sh`  |
 | Python         | `brew install python`                    | `winget Python.Python.3.12`          | `python3 python3-pip`               |
-| Docker Desktop | `brew install --cask docker`             | `winget Docker.DockerDesktop`        | `get.docker.com` script             |
 | VS Code        | `brew install --cask visual-studio-code` | `winget Microsoft.VisualStudioCode`  | snap / Microsoft repo               |
 | oh-my-zsh      | ohmyzsh install.sh                       | (use WSL2 + Linux flow)              | `zsh` + ohmyzsh install.sh          |
 | Salesforce CLI | `npm i -g @salesforce/cli`               | `npm i -g @salesforce/cli`           | `npm i -g @salesforce/cli`          |
 | Slack CLI      | `slack-cli/install.sh`                   | `slack-cli/install-windows.ps1`      | `slack-cli/install.sh`              |
 | tabcmd 2.0     | `pip3 install tabcmd`                    | `pip install tabcmd`                 | `pip3 install tabcmd`               |
+| GitHub auth    | `gh auth login` + `gh auth setup-git`    | same                                 | same                                |
 
 ---
 

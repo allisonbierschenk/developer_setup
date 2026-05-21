@@ -1,6 +1,6 @@
 ---
 name: dev-bootstrap
-description: Install everything a new Tableau developer needs on a fresh laptop — git, GitHub CLI, Node.js, Heroku CLI, Python, Docker Desktop, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0), plus Homebrew/Xcode tools on macOS. Detects the OS (macOS, Windows, Linux), then offers to run all installs in one go or walk through them step-by-step with confirmation. Use when the user says things like "set up my dev environment", "install dev tools", "bootstrap my laptop", or "I just got a new computer".
+description: Install everything a new Tableau developer needs on a fresh laptop — git, GitHub CLI, Node.js, Heroku CLI, Python, VS Code, oh-my-zsh, Salesforce CLI, Slack CLI, and Tableau CLI (tabcmd 2.0), plus Homebrew/Xcode tools on macOS. Then walks the user through GitHub authentication. Detects the OS (macOS, Windows, Linux), then offers to run all installs in one go or walk through them step-by-step with confirmation. Use when the user says things like "set up my dev environment", "install dev tools", "bootstrap my laptop", or "I just got a new computer".
 ---
 
 # Developer Bootstrap
@@ -30,7 +30,6 @@ echo "=== Toolchain survey ===" && \
 { gh --version 2>/dev/null | head -1 || echo "MISSING: gh"; } && \
 { heroku --version 2>/dev/null || echo "MISSING: heroku"; } && \
 { python3 --version 2>/dev/null || echo "MISSING: python3"; } && \
-{ docker --version 2>/dev/null || echo "MISSING: docker"; } && \
 { code --version 2>/dev/null | head -1 || echo "MISSING: code"; } && \
 { sf --version 2>/dev/null || echo "MISSING: sf"; } && \
 { slack version 2>/dev/null || echo "MISSING: slack"; } && \
@@ -44,7 +43,7 @@ On Windows, run an equivalent single PowerShell command via `powershell -Command
 Parse the output, then build a summary like:
 
 > Already installed: git 2.43, node 20.11, gh 2.40
-> Missing: heroku, python3, docker, sf, slack, tabcmd, oh-my-zsh
+> Missing: heroku, python3, sf, slack, tabcmd, oh-my-zsh
 
 Show that summary to the user, then determine the install mode:
 
@@ -65,7 +64,7 @@ Wait for the answer. Default to step-by-step if unclear.
 **Default behavior: install only what's missing. Never silently upgrade an already-installed tool** — even in run-everything mode. Major-version bumps (e.g. Node 18 → 22, Python 3.11 → 3.12) can break the user's existing projects.
 
 If the user explicitly asks to upgrade ("update everything", "get me on the latest", "upgrade node"), then upgrade — but tell them the current and target version before each one, and run the OS-appropriate upgrade command:
-- macOS Homebrew: `brew upgrade <pkg>` (or `brew upgrade --cask <pkg>` for casks like docker, vscode)
+- macOS Homebrew: `brew upgrade <pkg>` (or `brew upgrade --cask <pkg>` for casks like vscode)
 - Windows winget: `winget upgrade --id <Id> -e`
 - Debian/Ubuntu: `sudo apt update && sudo apt install --only-upgrade -y <pkg>` (Heroku, Slack, tabcmd, sf are not apt-managed — re-run their install scripts / `npm i -g @salesforce/cli@latest` / `pip install -U tabcmd`)
 - Fedora/RHEL: `sudo dnf upgrade <pkg>`
@@ -85,15 +84,13 @@ In **run-everything mode**: run the missing ones sequentially, surfacing only er
 4. **Node.js (LTS)** — `brew install node`
 5. **Heroku CLI** — `brew install heroku/brew/heroku`
 6. **Python** — `brew install python` (or offer `brew install pyenv` if the user wants version management)
-7. **Docker Desktop** — `brew install --cask docker`
-   - Tell the user to open Docker Desktop once to finish setup.
-8. **VS Code** — `brew install --cask visual-studio-code`
-9. **oh-my-zsh** — `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+7. **VS Code** — `brew install --cask visual-studio-code`
+8. **oh-my-zsh** — `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
    - **Always confirm before installing**, even in run-everything mode — this rewrites the user's `~/.zshrc` and changes the default shell. The installer is interactive; warn the user it will prompt them.
-10. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 4). Verify with `sf --version`.
-11. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
+9. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 4). Verify with `sf --version`.
+10. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`
     - The installer is interactive — it asks whether to install Deno. Tell the user to expect that prompt.
-12. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd` (requires Python from step 6). Verify with `tabcmd --version`.
+11. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd` (requires Python from step 6). Verify with `tabcmd --version`.
 
 ### Windows (PowerShell, not WSL)
 
@@ -104,12 +101,11 @@ Run each via the `Bash` tool by invoking `powershell -Command "..."`, or instruc
 3. **Node.js (LTS)** — `winget install --id OpenJS.NodeJS.LTS -e`
 4. **Heroku CLI** — `winget install --id Heroku.HerokuCLI -e`
 5. **Python** — `winget install --id Python.Python.3.12 -e`
-6. **Docker Desktop** — `winget install --id Docker.DockerDesktop -e`
-7. **VS Code** — `winget install --id Microsoft.VisualStudioCode -e`
-8. **oh-my-zsh** — Skip on native Windows. Tell the user oh-my-zsh requires zsh, which isn't standard on Windows; they'd need WSL2 (which uses the Linux flow) or Git Bash with zsh. Don't try to install it on plain PowerShell.
-9. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
-10. **Slack CLI** — `irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex` (run in PowerShell). The installer is interactive.
-11. **Tableau CLI (tabcmd 2.0)** — `pip install tabcmd` (requires Python from step 5). Verify with `tabcmd --version`.
+6. **VS Code** — `winget install --id Microsoft.VisualStudioCode -e`
+7. **oh-my-zsh** — Skip on native Windows. Tell the user oh-my-zsh requires zsh, which isn't standard on Windows; they'd need WSL2 (which uses the Linux flow) or Git Bash with zsh. Don't try to install it on plain PowerShell.
+8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
+9. **Slack CLI** — `irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex` (run in PowerShell). The installer is interactive.
+10. **Tableau CLI (tabcmd 2.0)** — `pip install tabcmd` (requires Python from step 5). Verify with `tabcmd --version`.
 
 After installs, remind the user to **close and reopen PowerShell** so the new tools are on PATH.
 
@@ -126,24 +122,22 @@ If the user is in WSL2, switch to the Linux flow inside their WSL shell.
    ```
 4. **Heroku CLI** — `curl https://cli-assets.heroku.com/install.sh | sh`
 5. **Python** — `sudo apt install -y python3 python3-pip python3-venv`
-6. **Docker** — follow the official convenience script: `curl -fsSL https://get.docker.com | sh`, then `sudo usermod -aG docker $USER` and tell the user to log out/in.
-7. **VS Code** — `sudo snap install code --classic` (or guide them to the .deb if snap isn't available)
-8. **zsh + oh-my-zsh** — `sudo apt install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
+6. **VS Code** — `sudo snap install code --classic` (or guide them to the .deb if snap isn't available)
+7. **zsh + oh-my-zsh** — `sudo apt install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`.
    - **Always confirm before installing**, even in run-everything mode — this rewrites `~/.zshrc` and changes the default shell. The installer is interactive.
-9. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
-10. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`. Interactive installer.
-11. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd` (requires Python from step 5). Verify with `tabcmd --version`.
+8. **Salesforce CLI** — `npm install -g @salesforce/cli` (requires Node from step 3). Verify with `sf --version`.
+9. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`. Interactive installer.
+10. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd` (requires Python from step 5). Verify with `tabcmd --version`.
 
 ### Linux — Fedora / RHEL
 
 1. **Git, curl, GitHub CLI, Node** — `sudo dnf install -y git curl gh nodejs python3 python3-pip`
 2. **Heroku CLI** — `curl https://cli-assets.heroku.com/install.sh | sh`
-3. **Docker** — `curl -fsSL https://get.docker.com | sh`, then `sudo usermod -aG docker $USER`.
-4. **VS Code** — guide them to `code` from the Microsoft repo (https://code.visualstudio.com/docs/setup/linux).
-5. **zsh + oh-my-zsh** — `sudo dnf install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`. **Always confirm before installing.**
-6. **Salesforce CLI** — `npm install -g @salesforce/cli`. Verify with `sf --version`.
-7. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
-8. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd`. Verify with `tabcmd --version`.
+3. **VS Code** — guide them to `code` from the Microsoft repo (https://code.visualstudio.com/docs/setup/linux).
+4. **zsh + oh-my-zsh** — `sudo dnf install -y zsh`, then `sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`. **Always confirm before installing.**
+5. **Salesforce CLI** — `npm install -g @salesforce/cli`. Verify with `sf --version`.
+6. **Slack CLI** — `curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash`.
+7. **Tableau CLI (tabcmd 2.0)** — `pip3 install tabcmd`. Verify with `tabcmd --version`.
 
 ## Phase 4 — Verify the toolchain and print a status report
 
@@ -162,14 +156,13 @@ Toolchain status
 ✓  gh            2.40.1
 ✓  heroku        9.4.0
 ✓  python3       3.12.2
-✓  docker        Docker version 24.0.7
 ✓  code          1.86.0
 ✓  sf            @salesforce/cli/2.27.6
 ✗  slack         not found
 ✓  tabcmd        2.0.13
 ✓  oh-my-zsh     installed
 ─────────────────────────────────────────────
-11 of 12 installed. 1 missing: slack
+10 of 11 installed. 1 missing: slack
 ```
 
 After the table, if anything is missing or errored:
@@ -177,24 +170,80 @@ After the table, if anything is missing or errored:
 2. Offer to re-run those specific installs.
 3. Mention the most common macOS gotcha if relevant: Homebrew prints two `eval` lines after install — if those weren't run, `brew`-installed tools won't be on PATH yet. Suggest opening a new terminal tab or running the two `eval` lines from Phase 3 step 2.
 
-If everything passes, say so plainly: "All 12 tools verified. You're ready to code."
+If everything passes, say so plainly: "All 11 tools verified. Now let's get you authenticated with GitHub."
 
-## Phase 5 — Wrap up
+## Phase 5 — GitHub authentication walkthrough
 
-Tell the user:
-- Which tools were already installed (skipped) vs newly installed.
-- Any manual steps still needed (Xcode GUI prompt, Docker Desktop first launch, PowerShell restart, WSL log out/in for docker group, etc.).
+After tool installs are verified, walk the user through GitHub setup so `git push`, `git pull`, and `gh` commands work without macOS Keychain pop-ups or password re-prompts. **Don't skip this phase** — most new-laptop frustration comes from broken git auth, not missing tools.
 
-Then offer to finish two common follow-ups for them so they don't have to fill in placeholders themselves:
+Run these steps in order, talking the user through each one. Pause and explain when waiting on browser interaction.
 
-1. **Configure git identity.** Check `git config --global user.name` and `git config --global user.email`. If either is empty, ask the user for their full name and the email they use for GitHub, then run:
-   ```
-   git config --global user.name "Their Real Name"
-   git config --global user.email "their.email@example.com"
-   ```
-   Substitute the values they give you — never leave placeholder text in the actual command.
+### Step 5.1 — Configure git identity
 
-2. **Authenticate GitHub CLI.** Offer to run `gh auth login` for them. This is interactive (gh asks them to pick HTTPS/SSH and opens a browser), so warn them they'll need to follow the prompts in the terminal.
+Check whether git already knows who they are:
+
+```
+git config --global user.name
+git config --global user.email
+```
+
+If either is empty, ask the user (in plain terms): "What name should show up on your commits?" and "What email do you use on GitHub?" Then run, substituting their actual values:
+
+```
+git config --global user.name "Their Real Name"
+git config --global user.email "their.email@example.com"
+```
+
+Never leave placeholder text like `"..."` or `"<name>"` in the command.
+
+### Step 5.2 — Authenticate GitHub CLI
+
+Run `gh auth status` first. If it reports they're already logged in, skip to step 5.3.
+
+Otherwise, tell the user: "I'm going to log you into GitHub through `gh`. It'll open your browser and ask you to paste a one-time code. Follow the prompts."
+
+Run:
+
+```
+gh auth login
+```
+
+`gh` will ask:
+- **What account?** → GitHub.com (default)
+- **Preferred protocol for git operations?** → **HTTPS** (recommended — works without SSH keys; tell the user to pick it).
+- **Authenticate Git with your GitHub credentials?** → **Yes**. This is the key answer that prevents Keychain pop-ups later.
+- **How would you like to authenticate?** → **Login with a web browser**. `gh` will print a one-time code and open the browser. Tell the user to paste the code, click through the auth prompts, and come back to the terminal.
+
+Wait for `gh` to print "Logged in as <username>" before continuing.
+
+### Step 5.3 — Set gh as the git credential helper
+
+This is what stops the macOS Keychain pop-up from appearing on every `git push`. Run:
+
+```
+gh auth setup-git
+```
+
+This tells git: "use `gh`'s stored credentials, not Keychain." After this, `git push` and `git pull` to GitHub repos work silently.
+
+### Step 5.4 — Verify auth end-to-end
+
+Run a quick check so the user sees it working:
+
+```
+gh auth status
+gh repo list --limit 3
+```
+
+If `gh repo list` prints repos without prompting for a password, auth is set up correctly. Tell the user: "You're authenticated with GitHub. `git push` and `git pull` will work without password prompts from here on."
+
+### Step 5.5 — Final wrap-up
+
+Summarize for the user:
+- Which tools were already installed vs. newly installed (from the Phase 4 status table).
+- That GitHub auth is configured and working.
+- Any manual steps still pending (Xcode GUI prompt, PowerShell restart on Windows, etc.).
+- Suggest one starter command they can try now: `gh repo clone <some-repo>` or just `gh repo list`.
 
 ## Notes
 

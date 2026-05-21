@@ -7,17 +7,29 @@ $RepoRaw   = 'https://raw.githubusercontent.com/allisonbierschenk/developer_setu
 $SkillName = 'dev-bootstrap'
 $Dest      = Join-Path $HOME ".claude\skills\$SkillName"
 
-Write-Host "Installing the $SkillName Claude skill into $Dest..."
+Write-Host ""
+Write-Host "▸ Installing the $SkillName Claude skill" -ForegroundColor Cyan
+Write-Host "  destination: $Dest" -ForegroundColor DarkGray
+Write-Host ""
 
 New-Item -ItemType Directory -Path $Dest -Force | Out-Null
 
-Invoke-WebRequest `
-    -Uri "$RepoRaw/skills/$SkillName/SKILL.md" `
-    -OutFile (Join-Path $Dest 'SKILL.md')
+Write-Host "  ↓ Downloading SKILL.md... " -NoNewline -ForegroundColor Yellow
+try {
+    Invoke-WebRequest `
+        -Uri "$RepoRaw/skills/$SkillName/SKILL.md" `
+        -OutFile (Join-Path $Dest 'SKILL.md')
+    Write-Host "done" -ForegroundColor Green
+} catch {
+    Write-Host "failed" -ForegroundColor Red
+    throw
+}
 
 Write-Host ""
-Write-Host "Done. The skill is installed at:"
-Write-Host "  $Dest\SKILL.md"
+Write-Host "✓ Skill installed" -ForegroundColor Green
+Write-Host "  $Dest\SKILL.md" -ForegroundColor DarkGray
 Write-Host ""
-Write-Host "Next step: open Claude Code and ask it to ""set up my dev environment""."
-Write-Host "Claude will detect your OS and walk you through the install."
+Write-Host "Next: " -NoNewline
+Write-Host 'open Claude Code and ask it to "set up my dev environment".'
+Write-Host "      Claude will detect your OS and walk you through the install."
+Write-Host ""

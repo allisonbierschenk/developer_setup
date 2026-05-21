@@ -4,19 +4,27 @@
 
 set -euo pipefail
 
+G=$'\033[32m'; R=$'\033[31m'; C=$'\033[36m'; Y=$'\033[33m'; D=$'\033[2m'; B=$'\033[1m'; X=$'\033[0m'
+
 REPO_RAW="https://raw.githubusercontent.com/allisonbierschenk/developer_setup/main"
 SKILL_NAME="dev-bootstrap"
 DEST="${HOME}/.claude/skills/${SKILL_NAME}"
 
-echo "Installing the ${SKILL_NAME} Claude skill into ${DEST}..."
+printf "\n${B}${C}▸ Installing the %s Claude skill${X}\n" "$SKILL_NAME"
+printf "${D}  destination: %s${X}\n\n" "$DEST"
 
 mkdir -p "${DEST}"
 
-curl -fsSL "${REPO_RAW}/skills/${SKILL_NAME}/SKILL.md" -o "${DEST}/SKILL.md"
+printf "  ${Y}↓${X} Downloading SKILL.md... "
+if curl -fsSL "${REPO_RAW}/skills/${SKILL_NAME}/SKILL.md" -o "${DEST}/SKILL.md"; then
+  printf "${G}done${X}\n"
+else
+  printf "${R}failed${X}\n"
+  exit 1
+fi
 
-echo ""
-echo "Done. The skill is installed at:"
-echo "  ${DEST}/SKILL.md"
-echo ""
-echo "Next step: open Claude Code and ask it to \"set up my dev environment\"."
-echo "Claude will detect your OS and walk you through the install."
+printf "\n${G}${B}✓ Skill installed${X}\n"
+printf "${D}  %s/SKILL.md${X}\n\n" "$DEST"
+
+printf "${B}Next:${X} open Claude Code and ask it to ${C}\"set up my dev environment\"${X}.\n"
+printf "      Claude will detect your OS and walk you through the install.\n\n"

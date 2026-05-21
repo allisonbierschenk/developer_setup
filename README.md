@@ -34,7 +34,7 @@ This downloads `SKILL.md` from this repo and saves it to `~/.claude/skills/dev-b
 - Windows: open **PowerShell** (Windows key, type `PowerShell`, Enter).
 - Linux: open your usual terminal.
 
-**Then copy the single command line below for your OS, paste it at the prompt, and press Enter.
+**Then copy the single command line below for your OS, paste it at the prompt, and press Enter.**
 
 **macOS or Linux** — copy this one line:
 ```
@@ -124,16 +124,17 @@ gh auth login
 
 **3. Answer the prompts in this exact order:**
 
-| Prompt                                              | Answer                       |
-| --------------------------------------------------- | ---------------------------- |
-| What account do you want to log into?               | **GitHub.com** → press Enter |
-| What is your preferred protocol for Git operations? | **HTTPS** → press Enter      |
-| Authenticate Git with your GitHub credentials?      | **Yes** → press Enter        |
-| How would you like to authenticate GitHub CLI?      | **Login with a web browser** → press Enter |
+| Prompt                                                                 | Answer                                     |
+| ---------------------------------------------------------------------- | ------------------------------------------ |
+| What account do you want to log into?                                  | **GitHub.com** → press Enter               |
+| What is your preferred protocol for Git operations?                    | **HTTPS** → press Enter                    |
+| Authenticate Git with your GitHub credentials?                         | **Y** → press Enter                        |
+| How would you like to authenticate GitHub CLI?                         | **Login with a web browser** → press Enter |
+| Press Enter to open https://github.com/login/device in your browser... | **press Enter**                            |
 
 A browser window opens to finish the login.
 
-> **Heads up:** if you haven't logged into GitHub in a while, GitHub may first ask for a one-time code emailed to you. Enter that code first, **then** enter the one-time code your terminal printed.
+> **Heads up:** if you are not logged into GitHub in your browser already, GitHub will first ask to MFA. Enter that code first, **then** enter the one-time code your terminal printed.
 
 ---
 

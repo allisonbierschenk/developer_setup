@@ -88,8 +88,23 @@ Claude will:
 4. Verify everything and print a status table at the end.
 
 ---
+## Step 5 — Install oh-my-zsh
 
-## Step 5 — Install Slack CLI
+**Open a new terminal tab** and paste the line for your OS. The installer will ask 1–2 yes/no questions — **answer `y` to all of them.**
+
+**macOS or Linux:**
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+**Windows (PowerShell):**
+```
+SOL
+```
+
+---
+
+## Step 6 — Install Slack CLI
 
 **Open a new terminal tab** and paste the line for your OS. The installer will ask 1–2 yes/no questions — **answer `y` to all of them.**
 
@@ -107,7 +122,7 @@ When it finishes, run `slack version` to confirm. If you see "command not found"
 
 ---
 
-## Step 6 — Authenticate with GitHub
+## Step 7 — Authenticate with GitHub
 
 **1. Set your git identity.** Replace the placeholders with **your real name** and **the email on your GitHub account**, then run:
 

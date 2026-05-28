@@ -124,6 +124,8 @@ When it finishes, run `slack version` to confirm. If you see "command not found"
 
 ## Step 7 — Authenticate with GitHub
 
+> **Have two GitHub accounts (e.g. a personal one and a Salesforce-owned one)?** Pick **one** to use on this laptop — either your personal account or the new Salesforce one — and use that account's name and email everywhere in this step.
+
 **1. Set your git identity.** Replace the placeholders with **your real name** and **the email on your GitHub account**, then run:
 
 ```

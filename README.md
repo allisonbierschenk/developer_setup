@@ -90,7 +90,11 @@ Claude will:
 ---
 ## Step 5 — Install oh-my-zsh
 
-**Open a new terminal tab** and paste the line for your OS. The installer will ask 1–2 yes/no questions — **answer `y` to all of them.**
+oh-my-zsh is a tool that makes your terminal more powerful and easier to use by adding prettier prompts, shortcuts, plugins, and smarter autocomplete.
+
+**Open a new terminal tab** and paste the line for your OS.
+
+> ⚠️ The installer will prompt: `Do you want to overwrite it with the Oh My Zsh template? [Y/n]` — type **`y`** and press Enter.
 
 **macOS or Linux:**
 ```

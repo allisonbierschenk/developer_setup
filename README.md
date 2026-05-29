@@ -92,7 +92,7 @@ Claude will:
 
 oh-my-zsh is a tool that makes your terminal more powerful and easier to use by adding prettier prompts, shortcuts, plugins, and smarter autocomplete.
 
-**Open a new terminal tab** and paste the line for your OS.
+**Open a new terminal tab** (mac: `Cmd+T`, windows: `Ctrl+Shift+T`) and paste the line for your OS.
 
 > ⚠️ The installer will prompt: `Do you want to overwrite it with the Oh My Zsh template? [Y/n]` — type **`y`** and press Enter.
 
@@ -110,7 +110,7 @@ SOL
 
 ## Step 6 — Install Slack CLI
 
-**Open a new terminal tab** and paste the line for your OS. The installer will ask 1–2 yes/no questions — **answer `y` to all of them.**
+**Open a new terminal tab** (mac: `Cmd+T`, windows: `Ctrl+Shift+T`) and paste the line for your OS. The installer will ask 1–2 yes/no questions — **answer `y` to all of them.**
 
 **macOS or Linux:**
 ```
@@ -122,7 +122,7 @@ curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash
 irm https://downloads.slack-edge.com/slack-cli/install-windows.ps1 | iex
 ```
 
-When it finishes, run `slack version` to confirm. If you see "command not found" on macOS/Linux, **open a fresh terminal tab** and try again — the installer added a new PATH entry that only loads in new shells.
+When it finishes, run `slack version` to confirm. If you see "command not found" on macOS/Linux, **open a fresh terminal tab** (mac: `Cmd+T`, windows: `Ctrl+Shift+T`) and try again — the installer added a new PATH entry that only loads in new shells.
 
 ---
 
